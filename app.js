@@ -7,7 +7,7 @@ const middleware = require('./utils/middleware')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const morgan = require('morgan')
-morgan.token('json-data', (req, res) => JSON.stringify(req.body))
+morgan.token('json-data', (req) => JSON.stringify(req.body))
 
 //connect database
 console.log('commecting to', config.MONGODB_URI)
