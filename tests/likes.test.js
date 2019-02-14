@@ -1,6 +1,4 @@
 const listHelper = require('../utils/list_helper')
-//const listWithOneBlog = require('../tests/sampleLists')
-//const listWithManyBlogs = require('../tests/sampleLists')
 
 const listWithOneBlog = [
   {
@@ -92,6 +90,18 @@ describe('blog with most favorites', () => {
       url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
       likes: 12,
       __v: 0
+    }
+    expect(result).toEqual(expected)
+  })
+
+})
+
+describe('author with most blogs', () => {
+  test('is found from a list of many blogs', () => {
+    const result = listHelper.mostBlogs(listWithManyBlogs)
+    const expected = {
+      author: "Robert C. Martin",
+      blogs: 3
     }
     expect(result).toEqual(expected)
   })
