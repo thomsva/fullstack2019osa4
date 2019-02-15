@@ -14,6 +14,8 @@ morgan.token('json-data', (req) => JSON.stringify(req.body))
 
 //connect database
 logger.info('connecting to', config.mongoUrl)
+mongoose.set('useCreateIndex', true); //avoid deprecation warning
+mongoose.set('useFindAndModify', false); //avoid deprecation warning
 mongoose.connect(config.mongoUrl, { useNewUrlParser: true })
   .then(() => {
     logger.info('connected to MongoDB')
