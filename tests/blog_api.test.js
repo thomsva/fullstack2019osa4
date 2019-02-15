@@ -3,6 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 const api = supertest(app)
+const _ = require('lodash')
 
 const initialBlogs = [
   {
@@ -73,7 +74,40 @@ test('adding a blog works and the response is correct', async () => {
   expect(titles).toContain('New test note')
 })
 
+test('likes defaults to zero if not defined', async () => {
+  var blog = _.clone(newBlog)
+  delete blog.likes
+  await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+  const response = await api.get('/api/blogs')
+  const addedBlog = response.body.filter(blog => blog.title === 'New test note')[0]
+  expect(addedBlog.likes).toBe(0)
+})
 
+test('blog is not added if title is missing', async () => {
+  var blog = _.clone(newBlog)
+  delete blog.title
+  await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(400)
+  const response = await api.get('/api/blogs')
+  expect(response.body.length).toBe(initialBlogs.length)
+})
+
+test('blog is not added if url is missing', async () => {
+  var blog = _.clone(newBlog)
+  delete blog.url
+  await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(400)
+  const response = await api.get('/api/blogs')
+  expect(response.body.length).toBe(initialBlogs.length)
+})
 
 
 afterAll(() => {
