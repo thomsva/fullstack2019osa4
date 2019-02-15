@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-
 const api = supertest(app)
 
 const initialBlogs = [
@@ -22,13 +21,11 @@ const initialBlogs = [
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
+  for (let note of initialBlogs) {
+    let noteObject = new Blog(note)
+    await noteObject.save()
+  }
 })
-
 
 test('blogs are returned as json', async () => {
   await api
@@ -37,13 +34,24 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-afterAll(() => {
-  mongoose.connection.close()
+test('field id exists', async () => {
+  const response = await api.get('/api/blogs')
+  expect(response.body[0].id).toBeDefined()
+})
+
+test('a specific blog is within the returned blogs', async () => {
+  const response = await api.get('/api/blogs')
+  const title = response.body.map(r => r.title)
+  expect(title).toContain(
+    'React patterns'
+  )
 })
 
 test('the number of blogs is correct', async () => {
   const response = await api.get('/api/blogs')
-
   expect(response.body.length).toBe(initialBlogs.length)
 })
 
+afterAll(() => {
+  mongoose.connection.close()
+})

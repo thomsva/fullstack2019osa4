@@ -4,11 +4,10 @@ const Blog = require('../models/blog')
 blogsRouter.get('/', async (request, response, next) => {
   try {
     const blogs = await Blog.find({})
-    response.json(blogs.map(blog => blog.toJson))
+    response.json(blogs)
   } catch (exception) {
     next(exception)
   }
-
 })
 
 blogsRouter.post('/', (request, response, next) => {
