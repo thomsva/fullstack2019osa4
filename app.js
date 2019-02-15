@@ -1,4 +1,5 @@
 const config = require('./utils/config')
+const logger = require('./utils/logger')
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
@@ -10,13 +11,13 @@ const morgan = require('morgan')
 morgan.token('json-data', (req) => JSON.stringify(req.body))
 
 //connect database
-console.log('commecting to', config.MONGODB_URI)
-mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true })
+logger.info('connecting to', config.mongoUrl)
+mongoose.connect(config.mongoUrl, { useNewUrlParser: true })
   .then(() => {
-    console.log('connected to MongoDB')
+    logger.info('connected to MongoDB')
   })
   .catch((error) => {
-    console.log('error connection to MongoDB:', error.message)
+    logger.info('error connection to MongoDB:', error.message)
   })
 
 //middleware
@@ -24,7 +25,7 @@ app.use(cors())
 app.use(express.static('build'))
 app.use(bodyParser.json())
 app.use(middleware.requestLogger)
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json-data'))
+//app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json-data'))
 app.use('/api/blogs', blogsRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
