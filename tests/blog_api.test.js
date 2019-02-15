@@ -18,6 +18,13 @@ const initialBlogs = [
     likes: 5
   }]
 
+const newBlog = {
+  title: "New test note",
+  author: "Aku Ankka",
+  url: "http://new.note",
+  likes: 2
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -51,6 +58,23 @@ test('the number of blogs is correct', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body.length).toBe(initialBlogs.length)
 })
+
+
+test('adding a blog works and the response is correct', async () => {
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const titles = response.body.map(r => r.title)
+  expect(response.body.length).toBe(initialBlogs.length + 1)
+  expect(titles).toContain('New test note')
+})
+
+
+
 
 afterAll(() => {
   mongoose.connection.close()
