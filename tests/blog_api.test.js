@@ -109,6 +109,16 @@ test('blog is not added if url is missing', async () => {
   expect(response.body.length).toBe(initialBlogs.length)
 })
 
+test('a blog can be deleted', async () => {
+  const response = await api.get('/api/blogs')
+  const deleteId = response.body[0].id
+  await api
+    .delete(`/api/blogs/${deleteId}`)
+    .expect(204)
+  const secondResponse = await api.get('/api/blogs')
+  expect(secondResponse.body.length).toBe(initialBlogs.length - 1)
+})
+
 
 afterAll(() => {
   mongoose.connection.close()
