@@ -65,7 +65,7 @@ test('adding a blog works and the response is correct', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
 
   const response = await api.get('/api/blogs')
@@ -80,7 +80,7 @@ test('likes defaults to zero if not defined', async () => {
   await api
     .post('/api/blogs')
     .send(blog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
   const response = await api.get('/api/blogs')
   const addedBlog = response.body.filter(blog => blog.title === 'New test note')[0]
@@ -118,6 +118,19 @@ test('a blog can be deleted', async () => {
   const secondResponse = await api.get('/api/blogs')
   expect(secondResponse.body.length).toBe(initialBlogs.length - 1)
 })
+
+test('a blog can be updated', async () => {
+  const response = await api.get('/api/blogs')
+  var updateBlog = response.body[0]
+  updateBlog.likes = 1000
+  await api
+    .put(`/api/blogs/${updateBlog.id}`)
+    .send(updateBlog)
+    .expect(200)
+  const secondResponse = await api.get('/api/blogs')
+  expect(secondResponse.body.filter(blog => blog.title === updateBlog.title)[0].likes).toBe(1000)
+})
+
 
 
 afterAll(() => {
