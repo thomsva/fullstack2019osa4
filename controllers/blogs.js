@@ -55,7 +55,7 @@ blogsRouter.delete('/:id', async (request, response, next) => {
     if (blog == null) {
       return response.status(404).json({ error: 'not found' })
     }
-    if (user != blog.user) {
+    if (user != blog.user && blog.user != null) {
       return response.status(401).json({ error: 'not authorized to delete' })
     }
     const deletedBlog = await Blog.findByIdAndRemove(request.params.id)
